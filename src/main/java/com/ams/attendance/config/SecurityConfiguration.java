@@ -25,11 +25,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final AdminService adminService; 
+    // private final JwtAuthFilter jwtAuthFilter;
+    // private final AdminService adminService; 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter, AuthenticationProvider authenticationProvider) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             // Using the bean defined below
-            .authenticationProvider(authenticationProvider())
+            .authenticationProvider(authenticationProvider)
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -67,7 +67,7 @@ public class SecurityConfiguration {
      * This replaces the deprecated setters on DaoAuthenticationProvider.
      */
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider authenticationProvider(AdminService adminService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(adminService); 
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -84,7 +84,7 @@ public class SecurityConfiguration {
      * Spring Security can autowire this when setting up the DaoAuthenticationProvider internally.
      */
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(AdminService adminService) {
         return adminService;
     }
 }
