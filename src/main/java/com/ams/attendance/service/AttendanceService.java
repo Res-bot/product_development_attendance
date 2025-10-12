@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AttendanceService {
 
-    private final AttendanceRepository attendanceRepository;
-    private final UserRepository userRepository; // To fetch User entity
+    private AttendanceRepository attendanceRepository;
+    private UserRepository userRepository;
 
     // Helper method to convert Entity to DTO
     private AttendanceDTO convertToDto(Attendance attendance) {

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
@@ -38,5 +40,12 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
      * Used by getDashboardStats in StudentService.
      */
     List<Attendance> findByUser_Id(Long userId);
+
+
+    List<Attendance> findByCourse_IdAndCheckInTimeBetween(Long courseId, LocalDateTime from, LocalDateTime to);
+
+    @Query("SELECT DISTINCT a.user.id FROM Attendance a WHERE a.course.id = :courseId")
+    List<Long> findDistinctUserIdsByCourseId(@Param("courseId") Long courseId);
+
 }  
 

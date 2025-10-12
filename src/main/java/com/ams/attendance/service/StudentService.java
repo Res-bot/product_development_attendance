@@ -4,75 +4,81 @@ import com.ams.attendance.dto.AttendanceDTO;
 import com.ams.attendance.dto.LeaveRequestDTO;
 import com.ams.attendance.dto.DashboardStatsDTO;
 import com.ams.attendance.entity.Attendance;
-import com.ams.attendance.entity.User;
+import com.ams.attendance.entity.Course;
 import com.ams.attendance.entity.LeaveRequest;
+import com.ams.attendance.entity.User;
 import com.ams.attendance.enums.AttendanceStatus;
 import com.ams.attendance.enums.LeaveStatus;
 import com.ams.attendance.repository.AttendanceRepository;
+import com.ams.attendance.repository.CourseRepository;
 import com.ams.attendance.repository.LeaveRepository;
 import com.ams.attendance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class StudentService {
-    
-    private final AttendanceRepository attendanceRepository;
-    private final LeaveRepository leaveRepository;
-    private final UserRepository userRepository; // Needed for Leave application
+	
+    @Autowired
+    private  CourseRepository courseRepository;
+    private  AttendanceRepository attendanceRepository;
+    private  LeaveRepository leaveRepository;
+    private  UserRepository userRepository;
 
-    // Assuming a simplified convertToDto(LeaveRequest) exists in LeaveService or here. 
-    // For now, we reuse the pattern from LeaveService
-    // NOTE: In a real app, this should be an injected helper class.
+
+    // --- Helper to convert LeaveRequest to DTO ---
     private LeaveRequestDTO convertToLeaveDto(LeaveRequest request) {
-        LeaveRequestDTO dto = new LeaveRequestDTO();
-        dto.setId(request.getId());
-        dto.setApplicantId(request.getApplicant().getId());
-        dto.setApplicantName(request.getApplicant().getName());
-        dto.setStartDate(request.getStartDate());
-        dto.setEndDate(request.getEndDate());
-        dto.setReason(request.getReason());
-        dto.setStatus(request.getStatus());
-        dto.setRequestedOn(request.getRequestedOn());
-        return dto;
+        return LeaveRequestDTO.fromEntity(request);
     }
 
-    /**
-     * 1. Records a new self Check-in event for a student. (Feature 3)
-     * This is simplified, assuming students track arrival time for classes/labs.
-     */
-    public AttendanceDTO checkIn(Long userId, LocalDateTime time) {
+    // -------------------------
+    // 1. Student Check-in
+    // -------------------------
+    public AttendanceDTO checkIn(Long userId, Long courseId, LocalDateTime time) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Student user not found."));
-        
+                .orElseThrow(() -> new RuntimeException("Student user not found."));
+
         Attendance attendance = new Attendance();
         attendance.setUser(user);
+
+        if (courseId != null) {
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new RuntimeException("Course not found"));
+            attendance.setCourse(course);
+        }
+
         attendance.setCheckInTime(time);
         attendance.setStatus(AttendanceStatus.PRESENT);
-        
+
         Attendance savedAttendance = attendanceRepository.save(attendance);
-        // NOTE: A proper conversion to AttendanceDTO requires more logic, 
-        // but for now, we return a new DTO instance.
+
         AttendanceDTO dto = new AttendanceDTO();
         dto.setUserId(userId);
         dto.setCheckInTime(savedAttendance.getCheckInTime());
         dto.setStatus(AttendanceStatus.PRESENT);
+        dto.setCourseId(courseId);
         return dto;
     }
 
-    /**
-     * 2. Allows a student to apply for class-specific leave. (Feature 5)
-     * This delegates logic to the LeaveRepository but sets a student-specific context.
-     */
+    public AttendanceDTO checkIn(Long userId, LocalDateTime time) {
+        return checkIn(userId, null, time);
+    }
+
+    // -------------------------
+    // 2. Apply for Class Leave
+    // -------------------------
     public LeaveRequestDTO applyForClassLeave(Long userId, LeaveRequestDTO requestDto) {
         User applicant = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Applicant user not found."));
+                .orElseThrow(() -> new RuntimeException("Applicant not found"));
 
         LeaveRequest request = new LeaveRequest();
         request.setApplicant(applicant);
@@ -82,86 +88,87 @@ public class StudentService {
         request.setStatus(LeaveStatus.PENDING);
         request.setRequestedOn(LocalDateTime.now());
 
-        LeaveRequest savedRequest = leaveRepository.save(request);
-        return convertToLeaveDto(savedRequest);
+        LeaveRequest saved = leaveRepository.save(request);
+
+        return convertToLeaveDto(saved);
     }
 
-    /**
-     * 3. Calculates the current attendance percentage for a specific course. (Feature 7)
-     * This is the personal metric for the student dashboard.
-     */
+    // -------------------------
+    // 3. Calculate Attendance %
+    // -------------------------
     public Double getAttendancePercentage(Long userId, Long courseId) {
-        // Find records for the student and course that are not 'ABSENT' (i.e., PRESENT, LATE, or ON_LEAVE)
-        List<Attendance> allRecords = attendanceRepository
-            .findByUser_IdAndCourse_Id(userId, courseId);
-        
-        long totalClasses = allRecords.size();
-        if (totalClasses == 0) return 100.0; // Assume 100% if no data yet
+        List<Attendance> allRecords = attendanceRepository.findByUser_IdAndCourse_Id(userId, courseId);
+        if (allRecords.isEmpty()) return 100.0;
 
         long presentCount = allRecords.stream()
-            .filter(a -> a.getStatus() == AttendanceStatus.PRESENT || a.getStatus() == AttendanceStatus.LATE)
-            .count();
-        
-        // This is a simplified calculation. Real logic needs to account for scheduled vs actual classes.
-        return (double) Math.round((presentCount * 100.0 / totalClasses) * 100) / 100;
-    }
-    
-    /**
-     * 4. Views low attendance alerts. (Feature 6)
-     * This utilizes the attendance percentage logic to generate an alert list.
-     */
-    public List<String> getLowAttendanceAlerts(Long userId) {
-        // NOTE: In a real system, we'd fetch the student's enrolled courses here.
-        // For demonstration, we simulate checking courses 1, 2, and 3.
-        List<Long> enrolledCourseIds = List.of(1L, 2L, 3L); 
-        final double THRESHOLD = 75.0;
-        
-        return enrolledCourseIds.stream()
-            .map(courseId -> {
-                Double percentage = getAttendancePercentage(userId, courseId);
-                if (percentage < THRESHOLD) {
-                    return "Alert: Attendance for Course " + courseId + " is " + percentage + "%, which is below the required 75%.";
-                }
-                return null;
-            })
-            .filter(alert -> alert != null)
-            .collect(Collectors.toList());
+                .filter(a -> a.getStatus() == AttendanceStatus.PRESENT || a.getStatus() == AttendanceStatus.LATE)
+                .count();
+
+        double percentage = presentCount * 100.0 / allRecords.size();
+        return Math.round(percentage * 100) / 100.0;
     }
 
-    /**
-     * Retrieves aggregated student dashboard statistics. (Feature 7)
-     * This uses the core metrics defined in the DashboardStatsDTO.
-     */
+    // -------------------------
+    // 4. Low Attendance Alerts
+    // -------------------------
+    public List<String> getLowAttendanceAlerts(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        Set<Long> enrolledCourseIds = user.getCourses().stream()
+                .map(c -> c.getId())
+                .collect(Collectors.toSet());
+
+        final double THRESHOLD = 75.0;
+
+        return enrolledCourseIds.stream()
+                .map(courseId -> {
+                    Double percentage = getAttendancePercentage(userId, courseId);
+                    if (percentage < THRESHOLD) {
+                        return "Alert: Attendance for Course " + courseId + " is " + percentage +
+                                "%, below required 75%";
+                    }
+                    return null;
+                })
+                .filter(alert -> alert != null)
+                .collect(Collectors.toList());
+    }
+
+    // -------------------------
+    // 5. Student Dashboard Stats
+    // -------------------------
     public DashboardStatsDTO getDashboardStats(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("Student user not found."));
-        
-        // --- Placeholder Data Aggregation ---
-        List<Attendance> allStudentAttendance = attendanceRepository.findByUser_Id(userId);
-        
-        long present = allStudentAttendance.stream().filter(a -> a.getStatus() == AttendanceStatus.PRESENT).count();
-        long absent = allStudentAttendance.stream().filter(a -> a.getStatus() == AttendanceStatus.ABSENT).count();
-        long totalDays = allStudentAttendance.size();
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        // Calculate a simple percentage for the dashboard
-        Double attendancePct = (totalDays > 0) ? (double) Math.round((present * 100.0 / totalDays) * 100) / 100 : 100.0;
-        
-        // --- Build DTO ---
+        List<Attendance> allAttendance = attendanceRepository.findByUser_Id(userId);
+
+        long present = allAttendance.stream().filter(a -> a.getStatus() == AttendanceStatus.PRESENT).count();
+        long absent = allAttendance.stream().filter(a -> a.getStatus() == AttendanceStatus.ABSENT).count();
+        long late = allAttendance.stream().filter(a -> a.getStatus() == AttendanceStatus.LATE).count();
+        long totalDays = allAttendance.size();
+
+        Double attendancePct = (totalDays > 0) ? Math.round(present * 100.0 / totalDays * 100) / 100.0 : 100.0;
+
         DashboardStatsDTO dto = new DashboardStatsDTO();
         dto.setUserName(user.getName());
         dto.setRole(user.getRole().name());
-        
         dto.setTotalAttendanceRecords((int) totalDays);
         dto.setPresentCount(present);
         dto.setAbsentCount(absent);
+        dto.setLateCount(late);
         dto.setAttendancePercentage(attendancePct);
-        
-        // Leave counts (simplified)
+
         dto.setApprovedLeaveCount(leaveRepository.countByApplicant_IdAndStatus(userId, LeaveStatus.APPROVED));
         dto.setPendingLeaveCount(leaveRepository.countByApplicant_IdAndStatus(userId, LeaveStatus.PENDING));
 
-        // Other fields like totalHoursPresent remain 0.0 without complex calculations.
-        
+        dto.setTotalHoursPresent(allAttendance.stream()
+                .filter(a -> a.getCheckInTime() != null && a.getCheckOutTime() != null)
+                .mapToDouble(a -> (a.getCheckOutTime().getHour() + a.getCheckOutTime().getMinute() / 60.0)
+                        - (a.getCheckInTime().getHour() + a.getCheckInTime().getMinute() / 60.0))
+                .sum());
+
         return dto;
     }
+
 }

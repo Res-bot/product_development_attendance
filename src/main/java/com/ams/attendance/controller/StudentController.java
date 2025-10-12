@@ -21,7 +21,7 @@ import java.util.List;
 @PreAuthorize("hasRole('STUDENT')") // Base authorization
 public class StudentController {
 
-    private final StudentService studentService;
+    private  StudentService studentService;
 
     /**
      * Helper to get the authenticated user's ID from the security context (JWT principal).

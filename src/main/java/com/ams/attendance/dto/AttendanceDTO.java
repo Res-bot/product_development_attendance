@@ -45,5 +45,117 @@ public class AttendanceDTO {
 
     // Read-only date for filtering
     private LocalDate attendanceDate;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public Long getCourseId() {
+		return courseId;
+	}
+
+	public void setCourseId(Long courseId) {
+		this.courseId = courseId;
+	}
+
+	public LocalDateTime getCheckInTime() {
+		return checkInTime;
+	}
+
+	public void setCheckInTime(LocalDateTime checkInTime) {
+		this.checkInTime = checkInTime;
+	}
+
+	public LocalDateTime getCheckOutTime() {
+		return checkOutTime;
+	}
+
+	public void setCheckOutTime(LocalDateTime checkOutTime) {
+		this.checkOutTime = checkOutTime;
+	}
+
+	public Double getTotalHours() {
+		return totalHours;
+	}
+
+	public void setTotalHours(Double totalHours) {
+		this.totalHours = totalHours;
+	}
+
+	public AttendanceStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(AttendanceStatus status) {
+		this.status = status;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public LocalDate getAttendanceDate() {
+		return attendanceDate;
+	}
+
+	public void setAttendanceDate(LocalDate attendanceDate) {
+		this.attendanceDate = attendanceDate;
+	}
+
+	public AttendanceDTO(Long id, @NotNull(message = "User ID is required for attendance tracking") Long userId,
+			String userName, Long courseId, @NotNull(message = "Check-in time is required") LocalDateTime checkInTime,
+			LocalDateTime checkOutTime, Double totalHours, AttendanceStatus status, String notes,
+			LocalDate attendanceDate) {
+		super();
+		this.id = id;
+		this.userId = userId;
+		this.userName = userName;
+		this.courseId = courseId;
+		this.checkInTime = checkInTime;
+		this.checkOutTime = checkOutTime;
+		this.totalHours = totalHours;
+		this.status = status;
+		this.notes = notes;
+		this.attendanceDate = attendanceDate;
+	}
+
+	public AttendanceDTO() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "AttendanceDTO [id=" + id + ", userId=" + userId + ", userName=" + userName + ", courseId=" + courseId
+				+ ", checkInTime=" + checkInTime + ", checkOutTime=" + checkOutTime + ", totalHours=" + totalHours
+				+ ", status=" + status + ", notes=" + notes + ", attendanceDate=" + attendanceDate + "]";
+	}
+    
+    
+    
 }
 

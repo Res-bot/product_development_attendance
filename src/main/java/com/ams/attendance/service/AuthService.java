@@ -7,6 +7,8 @@ import com.ams.attendance.entity.User;
 import com.ams.attendance.enums.UserRole;
 import com.ams.attendance.repository.UserRepository;
 import com.ams.attendance.util.JwtUtil;
+
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,13 +17,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
+    private  UserRepository userRepository;
     // Removed 'private final PasswordEncoder passwordEncoder;' as it is not directly used here
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    private final AdminService adminService; // For user creation
+    private AuthenticationManager authenticationManager;
+    private  JwtUtil jwtUtil;
+    private AdminService adminService; // For user creation
 
     // --- User Registration (Encrypts password by delegating to AdminService) ---
     /**
@@ -70,7 +73,7 @@ public class AuthService {
             final User user = (User) authentication.getPrincipal(); 
             
             // 3. Generate JWT token
-            final String jwt = jwtUtil.generateToken(user);
+            final String jwt = jwtUtil.generateToken(user.getUsername());
             
             // 4. Extract role and build response
             String role = user.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");

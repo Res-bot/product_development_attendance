@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LeaveController {
 
-    private final LeaveService leaveService;
+    private  LeaveService leaveService;
 
     /**
      * POST /api/leaves/{applicantId}

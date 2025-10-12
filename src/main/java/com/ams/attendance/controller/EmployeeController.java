@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @PreAuthorize("hasAnyRole('EMPLOYEE', 'TEACHER', 'ADMIN')") // Applies to any user who performs self-service
 public class EmployeeController {
 
-    private final EmployeeService employeeService;
+    private  EmployeeService employeeService;
 
     /**
      * Helper to get the authenticated user's ID from the security context (JWT principal).

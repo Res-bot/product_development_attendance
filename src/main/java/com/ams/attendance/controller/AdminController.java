@@ -22,7 +22,7 @@ import java.util.List;
 @PreAuthorize("hasRole('ADMIN')") // Base authorization for the entire controller
 public class AdminController {
 
-    private final AdminService adminService;
+    private  AdminService adminService;
 
     // --- User Management (Feature 2) ---
 

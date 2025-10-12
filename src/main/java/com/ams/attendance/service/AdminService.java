@@ -12,6 +12,8 @@ import com.ams.attendance.repository.DepartmentRepository;
 import com.ams.attendance.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,13 +26,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class AdminService implements UserDetailsService {
+	
+	  	@Autowired
+	  	private UserRepository userRepository;
 
-    private final UserRepository userRepository;
-    private final DepartmentRepository departmentRepository; // Required for Feature 8 logic
-    private final PasswordEncoder passwordEncoder;
-    private final CourseRepository courseRepository;
+	    @Autowired
+	    private DepartmentRepository departmentRepository;
 
-    // Initial check and creation of a default Admin user
+	    @Autowired
+	    private PasswordEncoder passwordEncoder;
+
+	    @Autowired
+	    private CourseRepository courseRepository;
+   
     @PostConstruct
     private void createAdminUser() {
         Optional<User> optionalUser = userRepository.findByRole(UserRole.ADMIN);
@@ -48,10 +56,19 @@ public class AdminService implements UserDetailsService {
         }
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // --- Spring Security UserDetailsService Implementation ---
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+        return  userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
     
@@ -71,7 +88,7 @@ public class AdminService implements UserDetailsService {
         user.setDepartment(userDto.getDepartment());
         user.setDesignation(userDto.getDesignation());
         
-        User savedUser = userRepository.save(user);
+        User savedUser =userRepository.save(user);
         return convertToDto(savedUser);
     }
     
@@ -84,7 +101,7 @@ public class AdminService implements UserDetailsService {
     
     // Update User
     public UserDTO updateUser(Long userId, UserDTO userDto) {
-        User existingUser = userRepository.findById(userId)
+        User existingUser =  userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
 
         // Update fields that are present in the DTO
@@ -102,13 +119,13 @@ public class AdminService implements UserDetailsService {
             existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
 
-        User updatedUser = userRepository.save(existingUser);
+        User updatedUser =  userRepository.save(existingUser);
         return convertToDto(updatedUser);
     }
     
     // Delete User
     public void deleteUser(Long userId) {
-        if (!userRepository.existsById(userId)) {
+        if (! userRepository.existsById(userId)) {
             throw new UsernameNotFoundException("User not found with ID: " + userId);
         }
         userRepository.deleteById(userId);
@@ -117,7 +134,7 @@ public class AdminService implements UserDetailsService {
 
     // Get All Users
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream()
+        return  userRepository.findAll().stream()
                 .map(this::convertToDto)
                 .toList();
     }
@@ -181,7 +198,7 @@ public class AdminService implements UserDetailsService {
     public List<UserDTO> findUsersByRole(UserRole role) {
         // The repository method is assumed to return List<User> or Optional<List<User>>
         // If the repository method is `List<User> findByRole(UserRole role);`, this is correct.
-        return userRepository.findByRole(role).stream().map(this::convertToDto).toList();
+        return  userRepository.findByRole(role).stream().map(this::convertToDto).toList();
     }
     
     // 4. Bulk User Upload (Placeholder Logic)

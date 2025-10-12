@@ -20,7 +20,7 @@ import java.util.List;
 @PreAuthorize("hasRole('TEACHER')") // Base authorization
 public class TeacherController {
 
-    private final TeacherService teacherService;
+    private TeacherService teacherService;
 
     // --- Attendance Marking (Feature 3) ---
 

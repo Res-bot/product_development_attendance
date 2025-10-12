@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AttendanceController {
 
-    private final AttendanceService attendanceService;
+    private  AttendanceService attendanceService;
 
     // --- Helper Method to Extract User ID from JWT ---
     // Since the User entity implements UserDetails, we can cast the principal.

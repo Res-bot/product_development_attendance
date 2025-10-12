@@ -38,4 +38,85 @@ public class Attendance {
     private AttendanceStatus status; // You'll need to create AttendanceStatus enum
 
     private String notes; // e.g., location/reason for manual attendance
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Course getCourse() {
+		return course;
+	}
+
+	public void setCourse(Course course) {
+		this.course = course;
+	}
+
+	public LocalDateTime getCheckInTime() {
+		return checkInTime;
+	}
+
+	public void setCheckInTime(LocalDateTime checkInTime) {
+		this.checkInTime = checkInTime;
+	}
+
+	public LocalDateTime getCheckOutTime() {
+		return checkOutTime;
+	}
+
+	public void setCheckOutTime(LocalDateTime checkOutTime) {
+		this.checkOutTime = checkOutTime;
+	}
+
+	public AttendanceStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(AttendanceStatus status) {
+		this.status = status;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Attendance(Long id, User user, Course course, LocalDateTime checkInTime, LocalDateTime checkOutTime,
+			AttendanceStatus status, String notes) {
+		super();
+		this.id = id;
+		this.user = user;
+		this.course = course;
+		this.checkInTime = checkInTime;
+		this.checkOutTime = checkOutTime;
+		this.status = status;
+		this.notes = notes;
+	}
+
+	public Attendance() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String toString() {
+		return "Attendance [id=" + id + ", user=" + user + ", course=" + course + ", checkInTime=" + checkInTime
+				+ ", checkOutTime=" + checkOutTime + ", status=" + status + ", notes=" + notes + "]";
+	}
+    
+    
 }

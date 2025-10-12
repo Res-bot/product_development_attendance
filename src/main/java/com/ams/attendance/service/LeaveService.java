@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LeaveService {
 
-    private final LeaveRepository leaveRepository;
-    private final UserRepository userRepository;
+    private LeaveRepository leaveRepository;
+    private UserRepository userRepository;
 
     // Helper method to convert Entity to DTO
     private LeaveRequestDTO convertToDto(LeaveRequest request) {
