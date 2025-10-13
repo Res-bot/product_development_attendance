@@ -79,10 +79,10 @@ public class Department {
 		this.courses = courses;
 	}
 
-	public Department() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	// public Department() {
+	// 	super();
+	// 	// TODO Auto-generated constructor stub
+	// }
 
 	@Override
 	public String toString() {

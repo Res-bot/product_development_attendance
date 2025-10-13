@@ -107,10 +107,10 @@ public class Attendance {
 		this.notes = notes;
 	}
 
-	public Attendance() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	// public Attendance() {
+	// 	super();
+	// 	// TODO Auto-generated constructor stub
+	// }
 
 	@Override
 	public String toString() {

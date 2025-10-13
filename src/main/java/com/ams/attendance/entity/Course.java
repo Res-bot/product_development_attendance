@@ -92,10 +92,10 @@ public class Course {
 		this.users = users;
 	}
 
-	public Course() {
-		super();
+	// public Course() {
+	// 	super();
 		// TODO Auto-generated constructor stub
-	}
+	// }
 
 	@Override
 	public String toString() {

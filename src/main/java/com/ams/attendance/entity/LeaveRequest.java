@@ -133,10 +133,10 @@ public class LeaveRequest {
 		this.rejectionReason = rejectionReason;
 	}
 
-	public LeaveRequest() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	// public LeaveRequest() {
+	// 	super();
+	// 	// TODO Auto-generated constructor stub
+	// }
 
 	@Override
 	public String toString() {

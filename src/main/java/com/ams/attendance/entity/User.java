@@ -51,10 +51,10 @@ public class User implements UserDetails {
 				+ ", photoUrl=" + photoUrl + ", createdAt=" + createdAt + ", courses=" + courses + "]";
 	}
 
-	public User() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	// public User() {
+	// 	super();
+	// 	// TODO Auto-generated constructor stub
+	// }
 
 	public User(Long id, String name, String email, String password, UserRole role, String department,
 			String designation, String phoneNumber, String photoUrl, LocalDateTime createdAt, Set<Course> courses) {
