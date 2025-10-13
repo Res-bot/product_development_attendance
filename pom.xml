@@ -9,9 +9,15 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
+<<<<<<< HEAD
 	<artifactId>attendance</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>attendance</name>
+=======
+	<artifactId>attendmanage</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>attendmanage</name>
+>>>>>>> 5b9de006f94faa4ff37c52b8a8ec843639953bf9
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -44,11 +50,14 @@
 		</dependency>
 
 		<dependency>
+<<<<<<< HEAD
     		<groupId>org.springframework.boot</groupId>
     		<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
 		<dependency>
+=======
+>>>>>>> 5b9de006f94faa4ff37c52b8a8ec843639953bf9
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
@@ -75,6 +84,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+<<<<<<< HEAD
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt-api</artifactId>
         <version>0.11.5</version> <!-- Ensure this version matches your build -->
@@ -102,6 +112,18 @@
     </dependency>
 
     </dependencies>
+=======
+        	<groupId>io.jsonwebtoken</groupId>
+        	<artifactId>jjwt-api</artifactId>
+        	<version>0.11.5</version> <!-- Ensure this version matches your build -->
+    	</dependency>
+		<dependency>
+    		<groupId>org.hibernate.validator</groupId>
+    		<artifactId>hibernate-validator</artifactId>
+    		<version>7.0.2.Final</version>
+		</dependency>
+	</dependencies>
+>>>>>>> 5b9de006f94faa4ff37c52b8a8ec843639953bf9
 
 	<build>
 		<plugins>

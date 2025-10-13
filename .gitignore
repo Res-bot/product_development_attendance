@@ -14,7 +14,11 @@ application.properties
 .settings
 .springBeans
 .sts4-cache
+<<<<<<< HEAD
 
+=======
+application.properties
+>>>>>>> 5b9de006f94faa4ff37c52b8a8ec843639953bf9
 ### IntelliJ IDEA ###
 .idea
 *.iws
