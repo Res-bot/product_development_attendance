@@ -44,5 +44,9 @@ public class LeaveRequest {
     private User approver;
 
     private String rejectionReason;
+
+    public User getUser() {
+        throw new UnsupportedOperationException("Unimplemented method 'getUser'");
+    }
 }
 

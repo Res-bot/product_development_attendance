@@ -55,7 +55,6 @@ public class AdminService implements UserDetailsService{
     }
     
     
-    // Create User (Registration/Admin Add User)
     public UserDTO createUser(UserDTO userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             throw new RuntimeException("User with this email already exists.");
@@ -73,14 +72,12 @@ public class AdminService implements UserDetailsService{
         return convertToDto(savedUser);
     }
     
-    // Get User by ID
     public UserDTO getUserById(Long userId) {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
         return convertToDto(user);
     }
     
-    // Update User
     public UserDTO updateUser(Long userId, UserDTO userDto) {
         User existingUser = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + userId));
@@ -101,7 +98,6 @@ public class AdminService implements UserDetailsService{
         return convertToDto(updatedUser);
     }
     
-    // Delete User
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new UsernameNotFoundException("User not found with ID: " + userId);
@@ -110,14 +106,12 @@ public class AdminService implements UserDetailsService{
     }
 
 
-    // Get All Users
     public List<UserDTO> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::convertToDto)
                 .toList();
     }
     
-    // Department Management (Create)
     private DepartmentDTO convertToDto(Department department) {
     DepartmentDTO dto = new DepartmentDTO();
     dto.setId(department.getId());
@@ -137,14 +131,12 @@ public class AdminService implements UserDetailsService{
         return convertToDto(savedDept);
     }
     
-    // Course Management (Create)
     private CourseDTO convertToDto(Course course) {
     CourseDTO dto = new CourseDTO();
     dto.setId(course.getId());
     dto.setName(course.getName());
     dto.setCourseCode(course.getCourseCode());
     dto.setCredits(course.getCredits());
-    // Only set department ID if the course is linked to one
     if (course.getDepartment() != null) {
         dto.setDepartmentId(course.getDepartment().getId());
     }
